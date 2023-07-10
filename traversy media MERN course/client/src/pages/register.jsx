@@ -30,7 +30,7 @@ const Register = () => {
       navigate("/");
     }
 
-    dispatch(reset());
+    // dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const handleChange = (e) => {
