@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node api/server.js",
     "server": "nodemon api/server.js",
+    "client": "npm start --prefix client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
