@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { register, reset } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
+import { register } from "../features/auth/authSlice";
 import Spinner from "../components/spinner";
 
-const Register = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.auth
-  );
-
+function Register() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     password2: "",
   });
+
+  const { name, email, password, password2 } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (isError) {
@@ -33,16 +35,16 @@ const Register = () => {
     // dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
+
     if (password !== password2) {
       toast.error("Passwords do not match");
     } else {
@@ -56,8 +58,6 @@ const Register = () => {
     }
   };
 
-  const { name, email, password, password2 } = formData;
-
   if (isLoading) {
     return <Spinner />;
   }
@@ -70,8 +70,9 @@ const Register = () => {
         </h1>
         <p>Please create an account</p>
       </section>
+
       <section className="form">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <div className="form-group">
             <input
               type="text"
@@ -80,7 +81,7 @@ const Register = () => {
               name="name"
               value={name}
               placeholder="Enter your name"
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
           <div className="form-group">
@@ -91,7 +92,7 @@ const Register = () => {
               name="email"
               value={email}
               placeholder="Enter your email"
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
           <div className="form-group">
@@ -102,7 +103,7 @@ const Register = () => {
               name="password"
               value={password}
               placeholder="Enter password"
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
           <div className="form-group">
@@ -113,7 +114,7 @@ const Register = () => {
               name="password2"
               value={password2}
               placeholder="Confirm password"
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
           <div className="form-group">
@@ -125,6 +126,6 @@ const Register = () => {
       </section>
     </>
   );
-};
+}
 
 export default Register;

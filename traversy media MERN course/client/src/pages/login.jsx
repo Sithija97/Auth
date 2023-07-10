@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { FaSignInAlt } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login, reset } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
+import { login } from "../features/auth/authSlice";
 import Spinner from "../components/spinner";
 
-const Login = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.auth
-  );
-
+function Login() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const { email, password } = formData;
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (isError) {
@@ -31,24 +33,23 @@ const Login = () => {
     // dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
+
     const userData = {
       email,
       password,
     };
+
     dispatch(login(userData));
   };
-
-  const { email, password } = formData;
 
   if (isLoading) {
     return <Spinner />;
@@ -60,10 +61,11 @@ const Login = () => {
         <h1>
           <FaSignInAlt /> Login
         </h1>
-        <p>Login and Start setting Goals</p>
+        <p>Login and start setting goals</p>
       </section>
+
       <section className="form">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <div className="form-group">
             <input
               type="email"
@@ -72,7 +74,7 @@ const Login = () => {
               name="email"
               value={email}
               placeholder="Enter your email"
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
           <div className="form-group">
@@ -83,7 +85,7 @@ const Login = () => {
               name="password"
               value={password}
               placeholder="Enter password"
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
 
@@ -96,6 +98,6 @@ const Login = () => {
       </section>
     </>
   );
-};
+}
 
 export default Login;
