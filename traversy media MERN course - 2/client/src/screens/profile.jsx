@@ -1,43 +1,43 @@
 import { useState, useEffect } from "react";
-import { Form, Button, Row, Col } from "react-bootstrap";
-import FormContainer from "../components/formContainer";
-import { Link, useNavigate } from "react-router-dom";
+// import { Link, useNavigate } from 'react-router-dom';
+import { Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useRegisterMutation } from "../features/users/usersApiSlice";
-import { setCredentials } from "../features/auth/authSlice";
-import Loader from "../components/loader";
 import { toast } from "react-toastify";
+import FormContainer from "../components/formContainer";
+import { useUpdateUserMutation } from "../features/users/usersApiSlice";
+import Loader from "../components/loader";
 
-export const Register = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const [register, { isLoading }] = useRegisterMutation();
-
-  const { userInfo } = useSelector((state) => state.auth);
-
-  const [name, setName] = useState("");
+export const Profile = () => {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const dispatch = useDispatch();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const [updateProfile, { isLoading }] = useUpdateUserMutation();
+
   useEffect(() => {
-    if (userInfo) {
-      navigate("/");
-    }
-  }, [navigate, userInfo]);
+    setName(userInfo.name);
+    setEmail(userInfo.email);
+  }, [userInfo.email, userInfo.name]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log("first");
-
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
     } else {
       try {
-        const res = await register({ name, email, password }).unwrap();
-        dispatch(setCredentials({ ...res }));
-        navigate("/");
+        const res = await updateProfile({
+          _id: userInfo._id,
+          name,
+          email,
+          password,
+        }).unwrap();
+        toast.success("Profile updated successfully");
+        dispatch(setCredentials(res));
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
@@ -45,7 +45,7 @@ export const Register = () => {
   };
   return (
     <FormContainer>
-      <h1>Register</h1>
+      <h1>Update Profile</h1>
 
       <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="name">
@@ -57,7 +57,6 @@ export const Register = () => {
             onChange={(e) => setName(e.target.value)}
           ></Form.Control>
         </Form.Group>
-
         <Form.Group className="my-2" controlId="email">
           <Form.Label>Email Address</Form.Label>
           <Form.Control
@@ -67,7 +66,6 @@ export const Register = () => {
             onChange={(e) => setEmail(e.target.value)}
           ></Form.Control>
         </Form.Group>
-
         <Form.Group className="my-2" controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
@@ -89,17 +87,11 @@ export const Register = () => {
         </Form.Group>
 
         <Button type="submit" variant="primary" className="mt-3">
-          Register
+          Update
         </Button>
 
         {isLoading && <Loader />}
       </Form>
-
-      <Row className="py-3">
-        <Col>
-          Already have an account? <Link to={`/login`}>Login</Link>
-        </Col>
-      </Row>
     </FormContainer>
   );
 };

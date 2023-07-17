@@ -1,17 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import Home from "./screens/home.jsx";
-import Login from "./screens/login.jsx";
-import Register from "./screens/register.jsx";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./index.css";
 import {
   Route,
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
+import { Home, Login, Register, Profile } from "./screens/index.js";
+import PrivateRoute from "./components/privateRoute.jsx";
+import { Provider } from "react-redux";
+import store from "./store/store.js";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.css";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,12 +20,17 @@ const router = createBrowserRouter(
       <Route index={true} path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="" element={<PrivateRoute />}>
+        <Route path="/profile" element={<Profile />} />
+      </Route>
     </Route>
   )
 );
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <Provider store={store}>
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>
+  </Provider>
 );

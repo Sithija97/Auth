@@ -1,15 +1,41 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
 import FormContainer from "../components/formContainer";
+import { useLoginMutation } from "../features/users/usersApiSlice";
+import { setCredentials } from "../features/auth/authSlice";
+import Loader from "../components/loader";
 
-const Login = () => {
+export const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [login, { isLoading }] = useLoginMutation();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [navigate, userInfo]);
+
   const submitHandler = async (e) => {
     e.preventDefault();
+    try {
+      const res = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate("/");
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
+    }
   };
+
   return (
     <FormContainer>
       <h1>Sign In</h1>
@@ -40,6 +66,8 @@ const Login = () => {
         </Button>
       </Form>
 
+      {isLoading && <Loader />}
+
       <Row className="py-3">
         <Col>
           New Customer? <Link to="/register">Register</Link>
@@ -48,5 +76,3 @@ const Login = () => {
     </FormContainer>
   );
 };
-
-export default Login;
